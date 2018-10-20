@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://activemq.apache.org/schema/core 
+		http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd">
+
+	<context:property-placeholder location="classpath:activemq.properties"
+		ignore-unresolvable="true" />
+
+	<!-- Activemq connection factory -->
+	<bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<constructor-arg index="0" value="${jms.broker.url}" />
+		<property name="useAsyncSend" value="true" />
+	</bean>
+	<!-- ConnectionFactory Definition -->
+	<bean id="connectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<constructor-arg ref="amqConnectionFactory" />
+	</bean>
+
+
+	<!--  Default Destination Queue Definition -->
+	<bean id="defaultDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="${jms.queue.name}" />
+	</bean>
+	<!-- JmsTemplate Definition -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="defaultDestination" ref="defaultDestination" />
+	</bean>
+	<!-- 自定义发送消息对象 -->
+	<!-- Message Sender Definition -->
+	<bean id="messageSender" class="com.qdzl.core.activemq.handle.MessageSender">
+		<constructor-arg index="0" ref="jmsTemplate" />
+	</bean>
+	<!-- 自定义接受消息对象 -->
+	<!-- Message Receiver Definition -->
+	<bean id="messageReceiver" class="com.qdzl.core.activemq.handle.MessageReceiver">
+
+	</bean>
+	<bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destinationName" value="${jms.queue.name}" />
+		<property name="messageListener" ref="messageReceiver" />
+	</bean>
+</beans>

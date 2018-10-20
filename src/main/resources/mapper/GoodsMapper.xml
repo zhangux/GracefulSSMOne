@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdzl.mapper.GoodsMapper">
+	<select id="query" resultType="Goods">
+		SELECT * FROM goods
+		ORDER BY uptime DESC
+		<if test="page != null and rows != null">
+			LIMIT #{page},#{rows}
+		</if>
+	</select>
+	<select id="queryCount" resultType="int">
+		SELECT COUNT(1) FROM goods
+		ORDER BY uptime DESC
+	</select>
+	<select id="get" resultType="Goods">
+		SELECT * FROM goods
+		where gid=#{gid}
+	</select>
+	<insert id="save" parameterType="Goods">
+		insert into
+		goods(name,ename,info,einfo,address,eaddress,parameterjson,isparameter,type,surplus,total,previewurl,
+		weight,
+		format,
+		unit,
+		supplier,
+		purchase,
+		sales,
+		production_date,
+		expiration_date,
+		term,
+		sncode,
+		bar_code,
+		batch_number,
+		remark,
+		parent_id,
+		brands,
+		gx,
+		gy,
+		comp_code,uptime)
+		value(#{name},#{ename},#{info},#{einfo},#{address},#{eaddress},#{parameterjson},#{isparameter},#{type},#{total},#{total},#{previewurl},
+		#{weight},
+		#{format},
+		#{unit},
+		#{supplier},
+		#{purchase},
+		#{sales},
+		#{production_date},
+		#{expiration_date},
+		#{term},
+		#{sncode},
+		#{bar_code},
+		#{batch_number},
+		#{remark},
+		#{parent_id},
+		#{brands},
+		#{gx},
+		#{gy},
+		#{comp_code},(current_timestamp(3)))
+	</insert>
+</mapper>
